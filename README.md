@@ -12,10 +12,10 @@
 
 ### Retrieving the data
 
-Download questionnaire xlsx responses to local computer, using Google Drive's filenames and saving in '~/Downloads`. Scripts `*_collate.R` will take it from there.
+Download questionnaire xlsx responses to local computer as compressed file: From Google Drive web interface, select the xlsx files, right-click and select Download. Unzip contents into ./data-raw. Scripts `*_collate.R` will take it from there.
 
 ### Assemble/update datasets
 
 Download to ~/Downloads/ an xlsx file for each PhD cohort (or each MAS cohort, each MDS cohort).   At the command line then do e.g.
 
-    make data_processed/phd_responses.rds
+    make data-processed/phd_responses.rds

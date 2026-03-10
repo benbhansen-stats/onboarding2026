@@ -2,14 +2,21 @@
 library(readxl)
 library(dplyr)
 
-##' data locations, short colnames
-##+ echo=1L
+##' Specify locations of data files to read in
+##+ echo=1:2
 sheets  <- list()
+if (!exists("data_directory")) data_directory  <- "data-raw"
 sheet_locs  <- c(
-    y3p='~/Downloads/(Doctoral- third year+) New Graduate Student Onboarding Questionnaire (Responses).xlsx',
-    y2='~/Downloads/(Doctoral- second year) New Graduate Student Onboarding Questionnaire (Responses).xlsx',
-    y1='~/Downloads/(Doctoral- first year) New Graduate Student Onboarding Questionnaire (Responses).xlsx')
+    '(Doctoral- third year+) New Graduate Student Onboarding Questionnaire (Responses).xlsx',
+    '(Doctoral- second year) New Graduate Student Onboarding Questionnaire (Responses).xlsx',
+    '(Doctoral- first year) New Graduate Student Onboarding Questionnaire (Responses).xlsx')
+sheet_locs  <- file.path(data_directory, sheet_locs)
+names(sheet_locs)  <- c("y3p", "y2", "y1")
 
+##' ## Abbreviate column names, create abbreviation table
+##'
+##' Full column names (lengthy, thus suppressed)
+##+ echo=FALSE
 colheads  <- c(
      time= "Timestamp",
  phd_lin_alg_useful="For each of the topics below, consider the utility of a refresher session in a single day during the week before the beginning of classes, and of potential sessions covering similar topics over weekly meetings during the 3 weeks before classes begin.   Check the boxes for the versions you would have found useful, leaving blanks next to topics that wouldn't have been useful to you to review. [Linear algebra PhD background]",
@@ -29,7 +36,7 @@ well_informed="Did you feel well informed on what to expect of the program befor
 would_help="Would you be willing to help with a future cohort's orientation? Check each activity you'd be willing to do:"
 )
 
-##'
+##'  Columns may arrive in different orders; rectify
 col_shortnames  <-
     sapply(sheet_locs,
        function(fn) {read_xlsx(fn) |> colnames() |>
@@ -51,12 +58,12 @@ for (thesheet in names(col_shortnames))
         }
 rm(thesheet)
 
-##'
+##'  Save the abbreviation/original col name association in its own table.
 cbind(short=names(colheads), full=colheads) |>
 write.csv(file="data-processed/phd_questions.csv",row.names=FALSE)
 data_phd  <- do.call(bind_rows, c(sheets, .id='cohort'))
 
-##'
+##' ## Clean up data values in table
 tidyup_values  <- function(cvar) {
     cvar  <- gsub("4 week ", "4wk", cvar, fixed=TRUE)    
     cvar  <- gsub("3 week ", "3wk", cvar, fixed=TRUE)
@@ -71,6 +78,6 @@ data_phd[grep("_useful", colnames(data_phd), fixed=TRUE)] <-
     data_phd[grep("_useful", colnames(data_phd), fixed=TRUE)] |>
 sapply(tidyup_values)
 
-##' 
+##' Save it
 
 saveRDS(data_phd, file="data-processed/phd_responses.rds")
