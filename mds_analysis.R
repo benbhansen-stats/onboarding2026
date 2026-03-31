@@ -1,8 +1,8 @@
 ##+ message=FALSE, echo=FALSE
 library(dplyr)
-dat  <- readRDS(file="data-processed/phd_responses.rds")
+dat  <- readRDS(file="data-processed/mds_responses.rds")
 
-##+
+
 ##+ echo=-1
 collapse_4levels <- function(v) {
   levs0<- c("0", "1d", "3wk", "4wk")
@@ -13,7 +13,7 @@ collapse_4levels <- function(v) {
   labs <- c("0", "1d", "3wk+", "3wk+", "1d+", "1d+",  "3wk+", "1d+")
   factor(v, levels=levs[od], labels=labs[od])
 }
-dat |>  select(real_anal_useful:mas_math_useful) |>
+dat |>  select(calc_useful:probab_useful) |>
   sapply(collapse_4levels, simplify=FALSE) |> 
 sapply(table, simplify=FALSE)
 
